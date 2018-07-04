@@ -1,8 +1,5 @@
 (ns htmlparser2hiccup.core
-  (:require [clojure.browser.repl :as repl]))
-
-;; (defonce conn
-;;   (repl/connect "http://localhost:9000/repl"))
+  (:require [htmlparser2 :as h2]))
 
 (enable-console-print!)
 
