@@ -1,9 +1,8 @@
 (ns htmlparser2hiccup.core
   (:require [htmlparser2 :as h2]
-            [clojure.string :as string]))
+            [cljs.reader :as reader]))
 
 (enable-console-print!)
-
 
 (defn html->hiccup
   [html-text]
@@ -25,7 +24,6 @@
                                "onclosetag" close-tag
                                "ontext" text})]
         (.write parser html-text)
-        (string/trim (str result-accumulator))))
+        (reader/read-string (str result-accumulator))))
 
-(def t "<p>bla<a href=\"http://example.com\">link</a></p>")
-(println (html->hiccup t))
+
