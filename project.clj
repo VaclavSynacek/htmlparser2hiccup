@@ -3,6 +3,7 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]]
+
   :plugins [[lein-npm "0.6.2"]
             [lein-cljsbuild "1.1.7"]
             [lein-marginalia "0.9.1"]
@@ -21,5 +22,13 @@
           :main          htmlparser2hiccup.core
           :output-dir    "target/out"
           :output-to     "target/htmlparser2hiccup.js"
+          :target        :nodejs
+          :optimizations :none}}
+       {:id "test"
+        :source-paths  ["src" "test"]
+        :compiler {
+          :main          htmlparser2hiccup.tests
+          :output-dir    "target/test/out"
+          :output-to     "target/test/tests.js"
           :target        :nodejs
           :optimizations :none}}]})
