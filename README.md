@@ -2,6 +2,8 @@
 
 Extremely naive html->hiccup parser based on htmlparser2.
 
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.vaclavsynacek/htmlparser2hiccup.svg)](https://clojars.org/org.clojars.vaclavsynacek/htmlparser2hiccup)
+
 ## Overview
 
  - Runs on nodejs (unlike [hickory](https://github.com/davidsantiago/hickory) or clj-only solutions).

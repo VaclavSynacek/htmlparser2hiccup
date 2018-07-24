@@ -1,6 +1,6 @@
-(defproject htmlparser2hiccup "0.1.0-SNAPSHOT"
+(defproject org.clojars.vaclavsynacek/htmlparser2hiccup "0.1.0-SNAPSHOT"
   :description "Extremely naive html->hiccup parser based on htmlparser2"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/VaclavSynacek/htmlparser2hiccup"
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]]
 
