@@ -38,14 +38,48 @@
 (tc/quick-check 10 sort-idempotent-prop)
 
 
-
+(def childless? #{:img :hr})
 (def block? #{:div :h1 :h2 :h3})
+(def inline? #{:span :b :i :em :strong})
 
-(s/def ::node
-  (s/or ::terminal string?
-        ::element ::block))
+(s/def ::childless-node
+  (s/tuple childless?))
 
-(s/def ::block
+(s/def ::terminal-node
+  (s/or ::text0 string?
+        ::text1 string?
+        ::text2 string?
+        ::text3 string?
+        ::text4 string?
+        ::text5 string?
+        ::simple ::childless-node))
+
+(s/def ::inline-node
+  (s/or
+    :c1 (s/tuple inline?
+                 (s/or ::inline ::inline-node ::terminal ::terminal-node))
+    :c2 (s/tuple inline?
+                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
+                 (s/or ::inline ::inline-node ::terminal ::terminal-node))))
+;    :c3 (s/tuple inline?
+;                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
+;                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
+ ;                (s/or ::inline ::inline-node ::terminal ::terminal-node))))
+
+(s/def ::block-node
+  (s/or
+    :c1 (s/tuple block?
+                 (s/or ::inline ::inline-node ::inner-block ::block-node))
+    :c2 (s/tuple block?
+                 (s/or ::inline ::inline-node ::inner-block ::block-node)
+                 (s/or ::inline ::inline-node ::inner-block ::block-node))
+    :c3 (s/tuple block?
+                 (s/or ::inline ::inline-node ::inner-block ::block-node)
+                 (s/or ::inline ::inline-node ::inner-block ::block-node)
+                 (s/or ::inline ::inline-node ::inner-block ::block-node))))
+
+
+(s/def ::block-node
   (s/or
     :c0 (s/tuple block?)
     :c1 (s/tuple block? ::node)
@@ -54,11 +88,33 @@
     :c4 (s/tuple block? ::node ::node ::node ::node)))
 
 
+
+(gen/recursive-gen (fn [inner] (gen/one-of [(gen/vector inner)
+                                            (gen/map inner inner)]))
+                  (gen/one-of [gen/boolean gen/int]))
+
+
+
 (binding
-  [s/*recursion-limit* 6]
-  (cljs.pprint/pprint (gen/generate (s/gen ::block))))
+  [s/*recursion-limit* 3])
 
 
+(gen/sample (s/gen ::inline-node))
+
+(cljs.pprint/pprint (gen/generate (s/gen ::block-node)))
+
+(binding
+  [s/*recursion-limit* 1]
+  (cljs.pprint/pprint (gen/generate (s/gen ::childless-node))))
+
+(binding
+  [s/*recursion-limit* 1]
+  (cljs.pprint/pprint (gen/generate (s/gen ::terminal-node))))
+
+(binding
+  [s/*recursion-limit* 3])
+
+(cljs.pprint/pprint (gen/generate (s/gen ::inline-node)))
 
 
 
