@@ -38,6 +38,30 @@
 (tc/quick-check 10 sort-idempotent-prop)
 
 
+
+(def block? #{:div :h1 :h2 :h3})
+
+(s/def ::node
+  (s/or ::terminal string?
+        ::element ::block))
+
+(s/def ::block
+  (s/or
+    :c0 (s/tuple block?)
+    :c1 (s/tuple block? ::node)
+    :c2 (s/tuple block? ::node ::node)
+    :c3 (s/tuple block? ::node ::node ::node)
+    :c4 (s/tuple block? ::node ::node ::node ::node)))
+
+
+(binding
+  [s/*recursion-limit* 6]
+  (cljs.pprint/pprint (gen/generate (s/gen ::block))))
+
+
+
+
+
 (deftest roundtrip-stable
   (let [hicc [:p {} [:a {:href "http://google.com"}]]]
     (is (= hicc
