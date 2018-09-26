@@ -10,3 +10,5 @@ pom.xml
 .lein-plugins/
 .repl*
 node_modules/*
+.nrepl-port
+.cljs_node_repl

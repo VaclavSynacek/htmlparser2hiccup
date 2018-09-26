@@ -19,13 +19,12 @@
                      (.append result-accumulator
                               "]"))
         text (fn [text]
-                     (.append result-accumulator
-                              " "
-                              (pr-str text)))
+                 (.append result-accumulator
+                          " "
+                          (pr-str text)))
         parser (h2/Parser. #js {"onopentag" open-tag
-                               "onclosetag" close-tag
-                               "ontext" text})]
-        (.write parser html-text)
-        (reader/read-string (str result-accumulator))))
-
+                                "onclosetag" close-tag
+                                "ontext" text})]
+       (.write parser html-text)
+       (reader/read-string (str result-accumulator))))
 
