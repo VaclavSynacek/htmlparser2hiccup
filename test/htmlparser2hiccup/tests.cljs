@@ -2,10 +2,12 @@
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [htmlparser2hiccup.core :refer [html->hiccup]]
             [cljs-node-io.core :as io]
+            [hiccups.runtime :as hiccupsrt]
             [clojure.spec.alpha :as s]
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop :include-macros true]))
+            [clojure.test.check.properties :as prop :include-macros true])
+  (:require-macros [hiccups.core :as hiccups :refer [html]]))
 
 
 (deftest by-example
@@ -30,9 +32,18 @@
 
 (def sort-idempotent-prop
   (prop/for-all [v (gen/vector gen/int)]
+    (println v)
     (= (sort v) (sort (sort v)))))
 
-(tc/quick-check 1000 sort-idempotent-prop)
+(tc/quick-check 10 sort-idempotent-prop)
+
+
+(deftest roundtrip-stable
+  (let [hicc [:p {} [:a {:href "http://google.com"}]]]
+    (is (= hicc
+           (html->hiccup (html hicc))))))
+
+
 
 (comment
 

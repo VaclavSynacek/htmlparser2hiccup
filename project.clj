@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [cljs-node-io "1.1.2"]
+                 [hiccups "0.3.0"]
                  [org.clojure/test.check "0.9.0"]]
 
   :plugins [[lein-npm "0.6.2"]
