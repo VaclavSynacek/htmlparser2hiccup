@@ -39,8 +39,10 @@
 
 
 (def childless? #{:img :hr})
-(def block? #{:div :h1 :h2 :h3})
+(def recursive-block? #{:div})
+(def final-block? #{:h1 :h2 :h3 :p})
 (def inline? #{:span :b :i :em :strong})
+
 
 (s/def ::childless-node
   (s/tuple childless?))
@@ -54,67 +56,51 @@
         ::text5 string?
         ::simple ::childless-node))
 
+(def inline-gen
+  (gen/recursive-gen
+    (fn [inner] (gen/one-of [(gen/tuple (s/gen inline?) inner)
+                             (gen/tuple (s/gen inline?) inner inner)
+                             (gen/tuple (s/gen inline?) inner inner inner)
+                             (gen/tuple (s/gen inline?) inner inner inner inner)
+                             (gen/tuple (s/gen inline?) inner inner inner inner inner)]))
+    (s/gen ::terminal-node)))
+
+
+(def recursive-block-gen
+  (gen/recursive-gen
+    (fn [inner] (gen/one-of [(gen/tuple (s/gen recursive-block?) inner)
+                             (gen/tuple (s/gen recursive-block?) inner inner)]))
+    inline-gen))
+
+(def final-block-gen
+  (gen/tuple (s/gen final-block?)
+             (gen/one-of [recursive-block-gen
+                          inline-gen
+                          (s/gen ::terminal-node)])))
+
+
+(def full-body-gen
+  (gen/vector final-block-gen 1 10
+              final-block-gen 1 10))
+
+
 (s/def ::inline-node
-  (s/or
-    :c1 (s/tuple inline?
-                 (s/or ::inline ::inline-node ::terminal ::terminal-node))
-    :c2 (s/tuple inline?
-                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
-                 (s/or ::inline ::inline-node ::terminal ::terminal-node))))
-;    :c3 (s/tuple inline?
-;                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
-;                 (s/or ::inline ::inline-node ::terminal ::terminal-node)
- ;                (s/or ::inline ::inline-node ::terminal ::terminal-node))))
+    (s/cat
+      :tag inline?
+      :children (s/+ (s/or ::terminal-node
+                           ::inline-node))))
 
-(s/def ::block-node
-  (s/or
-    :c1 (s/tuple block?
-                 (s/or ::inline ::inline-node ::inner-block ::block-node))
-    :c2 (s/tuple block?
-                 (s/or ::inline ::inline-node ::inner-block ::block-node)
-                 (s/or ::inline ::inline-node ::inner-block ::block-node))
-    :c3 (s/tuple block?
-                 (s/or ::inline ::inline-node ::inner-block ::block-node)
-                 (s/or ::inline ::inline-node ::inner-block ::block-node)
-                 (s/or ::inline ::inline-node ::inner-block ::block-node))))
+(def s (gen/generate inline-gen))
+(cljs.pprint/pprint s)
+(s/valid? ::inline-node s)
+
+(s/explain ::inline-node s)
 
 
-(s/def ::block-node
-  (s/or
-    :c0 (s/tuple block?)
-    :c1 (s/tuple block? ::node)
-    :c2 (s/tuple block? ::node ::node)
-    :c3 (s/tuple block? ::node ::node ::node)
-    :c4 (s/tuple block? ::node ::node ::node ::node)))
+(cljs.pprint/pprint (gen/generate full-body-gen))
 
 
 
-(gen/recursive-gen (fn [inner] (gen/one-of [(gen/vector inner)
-                                            (gen/map inner inner)]))
-                  (gen/one-of [gen/boolean gen/int]))
-
-
-
-(binding
-  [s/*recursion-limit* 3])
-
-
-(gen/sample (s/gen ::inline-node))
-
-(cljs.pprint/pprint (gen/generate (s/gen ::block-node)))
-
-(binding
-  [s/*recursion-limit* 1]
-  (cljs.pprint/pprint (gen/generate (s/gen ::childless-node))))
-
-(binding
-  [s/*recursion-limit* 1]
-  (cljs.pprint/pprint (gen/generate (s/gen ::terminal-node))))
-
-(binding
-  [s/*recursion-limit* 3])
-
-(cljs.pprint/pprint (gen/generate (s/gen ::inline-node)))
 
 
 
